@@ -26,10 +26,9 @@ allocator_global_heap &allocator_global_heap::operator=(allocator_global_heap &&
     return ptr;
 }
 
-void allocator_global_heap::do_deallocate_sm(
-    void *at)
-{
-    throw not_implemented("void allocator_global_heap::do_deallocate_sm(void *)", "your code should be here...");
+void allocator_global_heap::do_deallocate_sm(void *at) {
+    std::lock_guard<std::mutex> lock(mutex);
+    std::free(at);
 }
 
 bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept
