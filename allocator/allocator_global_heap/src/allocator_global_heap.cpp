@@ -7,6 +7,8 @@ allocator_global_heap::allocator_global_heap() = default;
 
 allocator_global_heap::~allocator_global_heap() = default;
 
+allocator_global_heap::allocator_global_heap(const allocator_global_heap &other) = default;
+
 [[nodiscard]] void *allocator_global_heap::do_allocate_sm(
     size_t size)
 {
@@ -17,11 +19,6 @@ void allocator_global_heap::do_deallocate_sm(
     void *at)
 {
     throw not_implemented("void allocator_global_heap::do_deallocate_sm(void *)", "your code should be here...");
-}
-
-allocator_global_heap::allocator_global_heap(const allocator_global_heap &other)
-{
-    throw not_implemented("allocator_global_heap::allocator_global_heap(const allocator_global_heap &other)", "your code should be here...");
 }
 
 allocator_global_heap &allocator_global_heap::operator=(const allocator_global_heap &other)
