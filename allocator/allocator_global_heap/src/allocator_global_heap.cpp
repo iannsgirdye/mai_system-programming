@@ -31,7 +31,6 @@ void allocator_global_heap::do_deallocate_sm(void *at) {
     std::free(at);
 }
 
-bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept
-{
-    throw not_implemented("bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept", "your code should be here...");
+bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept {
+    return dynamic_cast<const allocator_global_heap *>(&other) != nullptr;
 }
