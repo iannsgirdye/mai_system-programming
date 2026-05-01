@@ -1,5 +1,7 @@
-#include <not_implemented.h>
 #include "../include/allocator_global_heap.h"
+#include <mutex>
+
+static std::mutex mutex;
 
 allocator_global_heap::allocator_global_heap()
 {
