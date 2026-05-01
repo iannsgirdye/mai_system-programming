@@ -5,6 +5,8 @@ static std::mutex mutex;
 
 allocator_global_heap::allocator_global_heap() = default;
 
+allocator_global_heap::~allocator_global_heap() = default;
+
 [[nodiscard]] void *allocator_global_heap::do_allocate_sm(
     size_t size)
 {
@@ -15,11 +17,6 @@ void allocator_global_heap::do_deallocate_sm(
     void *at)
 {
     throw not_implemented("void allocator_global_heap::do_deallocate_sm(void *)", "your code should be here...");
-}
-
-allocator_global_heap::~allocator_global_heap()
-{
-    throw not_implemented("allocator_global_heap::~allocator_global_heap()", "your code should be here...");
 }
 
 allocator_global_heap::allocator_global_heap(const allocator_global_heap &other)
