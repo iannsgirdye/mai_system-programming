@@ -13,6 +13,8 @@ allocator_global_heap &allocator_global_heap::operator=(const allocator_global_h
 
 allocator_global_heap::allocator_global_heap(allocator_global_heap &&other) noexcept = default;
 
+allocator_global_heap &allocator_global_heap::operator=(allocator_global_heap &&other) noexcept = default;
+
 [[nodiscard]] void *allocator_global_heap::do_allocate_sm(
     size_t size)
 {
@@ -28,9 +30,4 @@ void allocator_global_heap::do_deallocate_sm(
 bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept
 {
     throw not_implemented("bool allocator_global_heap::do_is_equal(const std::pmr::memory_resource &other) const noexcept", "your code should be here...");
-}
-
-allocator_global_heap &allocator_global_heap::operator=(allocator_global_heap &&other) noexcept
-{
-    throw not_implemented("allocator_global_heap &allocator_global_heap::operator=(allocator_global_heap &&) noexcept", "your code should be here...");
 }
