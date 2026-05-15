@@ -61,14 +61,8 @@ find_package(GTest REQUIRED)
 2. Необходимо в ``/<part-name>/<task-name>/tests/CMakeLists.txt``
 ``` cmake
 # Заменить это
-target_link_libraries(
-        sys_prog_allctr_allctr_srtd_lst_tests
-        PRIVATE
-        gtest_main)
+target_link_libraries(... gtest_main)
 
 # На это
-target_link_libraries(
-        sys_prog_allctr_allctr_srtd_lst_tests
-        PRIVATE
-        GTest::gtest_main)
+target_link_libraries(... GTest::gtest_main)
 ```
