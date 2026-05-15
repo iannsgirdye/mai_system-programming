@@ -26,7 +26,6 @@ namespace
     };
 
     constexpr uintptr_t ALLOC_MASK = 1;
-    constexpr size_t OCCUPIED_BLOCK_META_SIZE = sizeof(block_header);
 
     allocator_header& get_header(void* trusted)
     {
@@ -74,7 +73,7 @@ allocator_boundary_tags::allocator_boundary_tags(
     std::pmr::memory_resource* parent_allocator,
     allocator_with_fit_mode::fit_mode allocate_fit_mode)
 {
-    if (space_size < OCCUPIED_BLOCK_META_SIZE)
+    if (space_size < occupied_block_metadata_size)
         throw std::bad_alloc();
 
     std::pmr::memory_resource* parent =
@@ -181,9 +180,9 @@ void* allocator_boundary_tags::do_allocate_sm(
     auto& header = get_header(_trusted_memory);
     std::lock_guard<std::mutex> lock(header.mtx);
 
-    size_t required = size + OCCUPIED_BLOCK_META_SIZE;
-    if (required < OCCUPIED_BLOCK_META_SIZE)
-        required = OCCUPIED_BLOCK_META_SIZE;
+    size_t required = size + occupied_block_metadata_size;
+    if (required < occupied_block_metadata_size)
+        required = occupied_block_metadata_size;
 
     char* const area_start = block_area_start(_trusted_memory);
     char* const area_end = block_area_end(_trusted_memory);
@@ -244,7 +243,7 @@ void* allocator_boundary_tags::do_allocate_sm(
         throw std::bad_alloc();
 
     size_t block_size_to_use = required;
-    if (best_size < required + OCCUPIED_BLOCK_META_SIZE)
+    if (best_size < required + occupied_block_metadata_size)
         block_size_to_use = best_size;
 
     auto* new_block = new (best) block_header;
@@ -269,7 +268,7 @@ void* allocator_boundary_tags::do_allocate_sm(
     if (next)
         to_block(next)->prev = new_block;
 
-    return reinterpret_cast<char*>(new_block) + OCCUPIED_BLOCK_META_SIZE;
+    return reinterpret_cast<char*>(new_block) + occupied_block_metadata_size;
 }
 
 void allocator_boundary_tags::do_deallocate_sm(
@@ -284,11 +283,11 @@ void allocator_boundary_tags::do_deallocate_sm(
     char* const area_start = block_area_start(_trusted_memory);
     char* const area_end = block_area_end(_trusted_memory);
 
-    if (static_cast<char*>(at) < area_start + OCCUPIED_BLOCK_META_SIZE ||
+    if (static_cast<char*>(at) < area_start + occupied_block_metadata_size ||
         static_cast<char*>(at) > area_end)
         return;
 
-    auto* block = reinterpret_cast<block_header*>(static_cast<char*>(at) - OCCUPIED_BLOCK_META_SIZE);
+    auto* block = reinterpret_cast<block_header*>(static_cast<char*>(at) - occupied_block_metadata_size);
     if (!block_is_occupied(block))
         return;
 
@@ -571,7 +570,7 @@ void* allocator_boundary_tags::boundary_iterator::operator*() const noexcept
     if (!_occupied_ptr)
         return nullptr;
     return _occupied
-        ? reinterpret_cast<char*>(_occupied_ptr) + OCCUPIED_BLOCK_META_SIZE
+        ? reinterpret_cast<char*>(_occupied_ptr) + occupied_block_metadata_size
         : _occupied_ptr;
 }
 
