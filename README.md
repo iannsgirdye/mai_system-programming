@@ -17,15 +17,15 @@ cmake --build build --target <test-name>
 
 **Запуск тестирования**
 ``` bash
-./build/allocator/<task-name>/tests/<test-name>
+./build/<part-name>/<task-name>/tests/<test-name>
 ```
 
-| `<task-name>`             | `<test-name>`                                |
-|---------------------------|----------------------------------------------|
-| `allocator_global_heap`   | `sys_prog_allctr_allctr_glbl_hp_tests`       |
-| `allocator_sorted_list`   | `sys_prog_allctr_allctr_srtd_lst_tests`      |
-| `allocator_boundary_tags` | `sys_prog_allctr_allctr_bndr_tgs_tests`      |
-| `indexing_tree_b_tree`    | `sys_prog_assctv_cntnr_indxng_tr_b_tr_tests` |
+| `<part-name>`           | `<task-name>`             | `<test-name>`                                |
+|-------------------------|---------------------------|----------------------------------------------|
+| `allocator`             | `allocator_global_heap`   | `sys_prog_allctr_allctr_glbl_hp_tests`       |
+| `allocator`             | `allocator_sorted_list`   | `sys_prog_allctr_allctr_srtd_lst_tests`      |
+| `allocator`             | `allocator_boundary_tags` | `sys_prog_allctr_allctr_bndr_tgs_tests`      |
+| `associative_container` | `indexing_tree_b_tree`    | `sys_prog_assctv_cntnr_indxng_tr_b_tr_tests` |
 
 
 ### Первичная настройка среды или устранение неполадок
@@ -58,7 +58,7 @@ FetchContent_MakeAvailable(googletest)
 find_package(GTest REQUIRED)
 ```
 
-2. Необходимо в ``/allocator/<task-name>/tests/CMakeLists.txt``
+2. Необходимо в ``/<part-name>/<task-name>/tests/CMakeLists.txt``
 ``` cmake
 # Заменить это
 target_link_libraries(
