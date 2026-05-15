@@ -188,15 +188,13 @@ void* allocator_boundary_tags::do_allocate_sm(
     char* const area_start = block_area_start(_trusted_memory);
     char* const area_end = block_area_end(_trusted_memory);
 
-    void* first_fit = nullptr;
-    size_t first_fit_size = 0;
-    void* best_fit = nullptr;
-    size_t best_size = SIZE_MAX;
-    void* worst_fit = nullptr;
-    size_t worst_size = 0;
-
     void* left = nullptr;
     void* right = header.first_occupied;
+
+    void* best = nullptr;
+    size_t best_size = header.mode == allocator_with_fit_mode::fit_mode::the_best_fit
+        ? SIZE_MAX
+        : 0;
 
     while (true)
     {
@@ -210,20 +208,28 @@ void* allocator_boundary_tags::do_allocate_sm(
 
         if (gap_size >= required) 
         {
-            if (!first_fit)
+            if (!best)
             {
-                first_fit = gap_start;
-                first_fit_size = gap_size;
-            }
-            if (gap_size < best_size)
-            {
-                best_fit = gap_start;
+                best = gap_start;
                 best_size = gap_size;
             }
-            if (gap_size > worst_size)
+            if (header.mode == allocator_with_fit_mode::fit_mode::first_fit)
+                break;
+            else if (header.mode == allocator_with_fit_mode::fit_mode::the_best_fit)
             {
-                worst_fit = gap_start;
-                worst_size = gap_size;
+                if (gap_size < best_size)
+                {
+                    best = gap_start;
+                    best_size = gap_size;
+                }
+            }
+            else
+            {
+                if (gap_size > best_size)
+                {
+                    best = gap_start;
+                    best_size = gap_size;
+                }
             }
         }
 
@@ -234,32 +240,14 @@ void* allocator_boundary_tags::do_allocate_sm(
         right = to_block(right)->next;
     }
 
-    void* selected = nullptr;
-    size_t selected_size = 0;
-    switch (header.mode)
-    {
-        case allocator_with_fit_mode::fit_mode::first_fit:
-            selected = first_fit;
-            selected_size = first_fit_size;
-            break;
-        case allocator_with_fit_mode::fit_mode::the_best_fit:
-            selected = best_fit;
-            selected_size = best_size;
-            break;
-        case allocator_with_fit_mode::fit_mode::the_worst_fit:
-            selected = worst_fit;
-            selected_size = worst_size;
-            break;
-    }
-
-    if (!selected)
+    if (!best)
         throw std::bad_alloc();
 
     size_t block_size_to_use = required;
-    if (selected_size < required + OCCUPIED_BLOCK_META_SIZE)
-        block_size_to_use = selected_size;
+    if (best_size < required + OCCUPIED_BLOCK_META_SIZE)
+        block_size_to_use = best_size;
 
-    auto* new_block = new (selected) block_header;
+    auto* new_block = new (best) block_header;
     block_set_occupied(new_block, block_size_to_use);
 
     void* prev = nullptr;
