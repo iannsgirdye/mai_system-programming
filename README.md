@@ -42,8 +42,8 @@ cmake -B build \
 ```
 
 
-### Использование локального Google Tests
-0. Установить и настроить Google Tests
+### Использование локального Google Test
+0. Установить и настроить Google Test
 
 1. Необходимо в ``/CMakeLists.txt``
 ``` cmake
